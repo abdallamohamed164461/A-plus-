@@ -1,23 +1,352 @@
-@startuml
-title "A Plus Academy"
-class Super_Admin{
-
-
+@startuml A_Plus_Academy
+ 
+title A Plus Academy
+ 
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam nodesep 40
+skinparam ranksep 50
+ 
+skinparam class {
+ 
+  BackgroundColor #FDFDFD
+  BorderColor #2E5597
+  ArrowColor #444444
+ 
 }
-class Department_Admin{}
+ 
+' ================= Users =================
+ 
+class Roles {
+ 
+  Role_id : int
+  {field} Name : varchar(50)
+ 
+}
+ 
+class Users {
+ 
+  User_id : int
+  Role_id : int
+  {field} First_Name : varchar(50)
+  {field} Middle_Name : varchar(50)
+  {field} Last_Name : varchar(50)
+  {field} Email : varchar(255)
+  {field} Password_Hash : varchar(255)
+  Created_At : datetime
+  login()
+ 
+}
+ 
+class Super_Admin {
+ 
+  create_Department()
+  create_Semester()
+  create_User()
+ 
+}
+ 
+class Department_Admin {
+ 
+  User_id : int
+  Department_id : int
+  create_Course()
+  create_Offering()
+  assign_Doctor()
+  enroll_Student()
+ 
+}
+ 
 class Doctor {
-
+ 
+  User_id : int
+  Department_id : int
+  upload_Material()
+  create_Assessment()
+  record_Attendance()
+  grade_Submission()
+  publish_Market_Info()
+ 
 }
-class Student {
-
-Student_id : int 
-Student_Code : int 
-Academic_Year : int 
-Department_id : int 
-
+ 
+class Students {
+ 
+  User_id : int
+  {field} Student_Code : varchar(30)
+  Academic_Year : int
+  Department_id : int
+  submit_Assessment()
+  view_Grades()
+  view_Feedback()
+ 
 }
-class n8n_Automation{}
-
-
-
+ 
+class Departments {
+ 
+  Department_id : int
+  {field} Name : varchar(150)
+ 
+}
+ 
+' ================= Courses =================
+ 
+class Semesters {
+ 
+  Semester_id : int
+  Start_Date : date
+  End_Date : date
+ 
+}
+ 
+class Courses {
+ 
+  {field} Course_Code : varchar(20)
+  {field} Title : varchar(200)
+  Department_id : int
+  Description : text
+ 
+}
+ 
+class Course_Offerings {
+ 
+  Offering_id : int
+  {field} Course_Code : varchar(20)
+  Semester_id : int
+ 
+}
+ 
+class Enrollments {
+ 
+  Offering_id : int
+  Student_id : int
+  Enrolled_At : datetime
+ 
+}
+ 
+class Materials {
+ 
+  Material_id : int
+  Offering_id : int
+  {field} Title : varchar(200)
+  File_Url : text
+  Uploaded_By : int
+  Uploaded_At : datetime
+ 
+}
+ 
+class Course_Market {
+ 
+  {field} Course_Code : varchar(20)
+  Why_Important : text
+  Suggested_Courses : text
+  Future_Projects : text
+  Published_By : int
+  Published_At : datetime
+ 
+}
+ 
+' ================= Assessments =================
+ 
+class Assessments {
+ 
+  Assessment_id : int
+  Offering_id : int
+  {field} Type : varchar(20)
+  {field} Title : varchar(200)
+  File_Url : text
+  Requires_File : boolean
+  Time_Limit_Minutes : smallint
+  {field} Max_Score : decimal(6,2)
+  Deadline : datetime
+  Created_By : int
+  Created_At : datetime
+ 
+}
+ 
+class Assessment_Questions {
+ 
+  Question_id : int
+  Assessment_id : int
+  Question_Text : text
+  {field} Points : decimal(5,2)
+  Position : smallint
+ 
+}
+ 
+class Question_Options {
+ 
+  Option_id : int
+  Question_id : int
+  Option_Text : text
+  Is_Correct : boolean
+  Position : smallint
+ 
+}
+ 
+class Submissions {
+ 
+  Submission_id : int
+  Assessment_id : int
+  Student_id : int
+  File_Url : text
+  Submitted_At : datetime
+  auto_Grade_MCQ()
+}
+ 
+class Submission_Answers {
+ 
+  Submission_id : int
+  Question_id : int
+  Selected_Option_id : int
+  {field} Points_Awarded : decimal(5,2)
+ 
+}
+ 
+class AI_Feedback {
+ 
+  Feedback_id : int
+  Submission_id : int
+  Feedback_Text : text
+  {field} Suggested_Score : decimal(3,1)
+  Generated_At : datetime
+ 
+}
+ 
+class Assessment_Grades {
+ 
+  Grade_id : int
+  Submission_id : int
+  {field} Score : decimal(6,2)
+  Graded_By : int
+  Is_Auto : boolean
+  Graded_At : datetime
+ 
+}
+ 
+' ================= Attendance =================
+ 
+class Attendance_Records {
+ 
+  Attendance_id : int
+  Offering_id : int
+  Student_id : int
+  Session_Date : date
+  {field} Status : varchar(10)
+  Recorded_By : int
+  Recorded_At : datetime
+ 
+}
+ 
+' ================= Notifications + n8n =================
+ 
+class Notifications {
+ 
+  Notification_id : int
+  User_id : int
+  {field} Notification_Type : varchar(50)
+  Message : text
+  Is_Read : boolean
+  Created_At : datetime
+ 
+}
+ 
+class Notification_Logs {
+ 
+  Log_id : int
+  Notification_id : int
+  User_id : int
+  {field} Related_Entity_Type : varchar(50)
+  Related_Entity_id : int
+  {field} Channel : varchar(30)
+  Sent_At : datetime
+ 
+}
+ 
+class n8n_Automation {
+ 
+  check_Absence_Warnings()
+  check_Deadline_Reminders()
+  send_Weekly_Summary()
+ 
+}
+ 
+' ================= Gamification =================
+ 
+class Student_Gamification {
+ 
+  Student_id : int
+  Points : int
+  Current_Streak : int
+  Longest_Streak : int
+  Last_Activity : date
+  add_Points()
+ 
+}
+ 
+class Badges {
+ 
+  Badge_id : int
+  {field} Name : varchar(100)
+  Description : text
+  Criteria : text
+ 
+}
+ 
+class Student_Badges {
+ 
+  Student_id : int
+  Badge_id : int
+  Earned_At : datetime
+ 
+}
+ 
+' ================= Relationships =================
+ 
+Users <|-- Super_Admin
+Users <|-- Department_Admin
+Users <|-- Doctor
+Users <|-- Students
+Roles "1" --> "*" Users : has
+ 
+Departments "1" --> "*" Students : has
+Departments "1" --> "*" Doctor : has
+Departments "1" --> "1" Department_Admin : headed by
+Departments "1" --> "*" Courses : offers
+ 
+Courses "1" --> "*" Course_Offerings : given as
+Semesters "1" --> "*" Course_Offerings : contains
+Course_Offerings "*" --> "*" Doctor : taught by
+Students "1" --> "*" Enrollments : enrolled in
+Course_Offerings "1" --> "*" Enrollments : has
+Course_Offerings "1" --> "*" Materials : has
+Doctor "1" --> "*" Materials : uploads
+Courses "1" --> "0..1" Course_Market : market info
+Doctor "1" --> "*" Course_Market : publishes
+ 
+Course_Offerings "1" --> "*" Assessments : has
+Doctor "1" --> "*" Assessments : creates
+Assessments "1" *-- "*" Assessment_Questions : contains
+Assessment_Questions "1" *-- "2..*" Question_Options : has
+Assessments "1" --> "*" Submissions : receives
+Students "1" --> "*" Submissions : submits
+Submissions "1" *-- "*" Submission_Answers : contains
+Submission_Answers "*" --> "1" Assessment_Questions : answers
+Submission_Answers "*" --> "0..1" Question_Options : selects
+Submissions "1" --> "0..1" AI_Feedback : gets
+Submissions "1" --> "0..1" Assessment_Grades : graded as
+Doctor "1" --> "*" Assessment_Grades : gives
+ 
+Enrollments "1" --> "*" Attendance_Records : has
+Doctor "1" --> "*" Attendance_Records : records
+ 
+Users "1" --> "*" Notifications : receives
+Notifications "1" --> "*" Notification_Logs : sent via
+n8n_Automation ..> Notifications : creates
+n8n_Automation ..> Attendance_Records : reads absences
+n8n_Automation ..> Assessments : reads deadlines
+ 
+Students "1" --> "1" Student_Gamification : has
+Students "1" --> "*" Student_Badges : earns
+Badges "1" --> "*" Student_Badges : awarded as
+ 
 @enduml
